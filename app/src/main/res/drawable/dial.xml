@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+  <!-- Background Circle -->
+  <path
+      android:fillColor="#F9A825"
+      android:pathData="M12,0C5.37,0 0,5.37 0,12s5.37,12 12,12 12,-5.37 12,-12S18.63,0 12,0z" />
+
+  <!-- Phone Receiver -->
+  <path
+      android:fillColor="#000000"
+      android:pathData="M16.59,13.41a.996.996 0 0,0 -1.41,0l-1.17,1.17c-0.26,-0.11 -0.52,-0.24 -0.8,-0.4a11.34,11.34 0 0,1 -2.98,-2.98c-0.15,-0.28 -0.29,-0.54 -0.4,-0.8l1.17,-1.17a.996.996 0 1,0 -1.41,-1.41l-1.97,1.97c-0.39,0.39 -0.39,1.02 -0.02,1.44 0.25,0.28 0.48,0.55 0.71,0.87a13.81,13.81 0 0,0 4.65,4.65c0.32,0.23 0.59,0.46 0.87,0.71 0.42,0.37 1.05,0.37 1.44,-0.02l1.97,-1.97c0.38,-0.38 0.38,-1.02 -0.02,-1.41z" />
+</vector>
