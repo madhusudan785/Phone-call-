@@ -13,14 +13,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.phonecall.callList.data.presentation.screens.CallLogsScreen
-import com.example.phonecall.callList.data.presentation.screens.ContactsScreen
-
+import com.example.phonecall.callList.data.presentation.screens.CallLogScreen
+import com.example.phonecall.callList.data.presentation.screens.ContactScreen
 
 @Composable
 fun PhoneAppNavigation(
@@ -35,14 +36,14 @@ fun PhoneAppNavigation(
                 NavigationBarItem(
                     selected = currentRoute == Screen.Contacts.route,
                     onClick = { navController.navigate(Screen.Contacts.route) },
-                    icon = { Icon(Icons.Default.Person, "contacts") },
+                    icon = { Icon(Icons.Default.Person, contentDescription = "Contacts") },
                     label = { Text("Contacts") }
                 )
 
                 NavigationBarItem(
                     selected = currentRoute == Screen.CallLogs.route,
                     onClick = { navController.navigate(Screen.CallLogs.route) },
-                    icon = { Icon(Icons.Default.Call, "Call Logs") },
+                    icon = { Icon(Icons.Default.Call, contentDescription = "Call Logs") },
                     label = { Text("Call Logs") }
                 )
             }
@@ -53,8 +54,14 @@ fun PhoneAppNavigation(
             startDestination = Screen.Contacts.route,
             modifier = Modifier.padding(paddingValues)
         ) {
-            composable(Screen.Contacts.route) { ContactsScreen() }
-            composable(Screen.CallLogs.route) { CallLogsScreen() }
+            composable(Screen.Contacts.route) {
+                val viewModel: ContactViewModel = viewModel()
+                ContactScreen(viewModel)
+            }
+            composable(Screen.CallLogs.route) {
+                val viewModel: CallLogViewModel = viewModel()
+                CallLogScreen(viewModel)
+            }
         }
     }
 }

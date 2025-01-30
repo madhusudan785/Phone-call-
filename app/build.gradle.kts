@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+//    id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
 }
 
@@ -74,6 +75,14 @@ dependencies {
 
     // Permission handling
     implementation (libs.accompanist.permissions)
+
+    implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    kapt(libs.androidx.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation ("androidx.compose.material:material-icons-extended:1.7.7")
 
 
 

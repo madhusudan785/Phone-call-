@@ -1,53 +1,73 @@
 package com.example.phonecall.callList.data.presentation
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.phonecall.callList.data.Contact
-import com.example.phonecall.callList.data.ContactDao
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-class ContactsViewModel(
-    private val contactDao: ContactDao
-) : ViewModel() {
-    // Expose contacts as a Flow from Room
-    val contacts: Flow<List<Contact>> = contactDao.getAllContacts()
+import android.app.Application
+import android.provider.ContactsContract
+import androidx.lifecycle.AndroidViewModel
+import com.example.phonecall.callList.data.AppPreferences
+import com.example.phonecall.callList.data.ContactDatabase
+import com.example.phonecall.callList.data.repository.ContactRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
-    // Add a new contact
-    fun addContact(contact: Contact) {
+class ContactViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val db = ContactDatabase.getDatabase(application)
+    private val repository = ContactRepository(db.contactDao())
+    private val appPreferences = AppPreferences(application)
+
+    private val _contacts = MutableStateFlow<List<Contact>>(emptyList())
+    val contacts = _contacts.asStateFlow()
+
+    private val _isFirstTime = MutableStateFlow(true)
+    val isFirstTime = _isFirstTime.asStateFlow()
+
+    init {
         viewModelScope.launch {
-            contactDao.insertContact(contact)
+            repository.allContacts.collect { _contacts.value = it }
+        }
+        checkFirstTime()
+    }
+
+    private fun checkFirstTime() {
+        viewModelScope.launch {
+            _isFirstTime.value = appPreferences.isFirstTime()
         }
     }
 
-    // Delete a contact
-    fun deleteContact(contact: Contact) {
+    fun fetchAndSaveContacts() {
         viewModelScope.launch {
-            contactDao.deleteContact(contact)
-        }
-    }
+            val contactsList = mutableListOf<Contact>()
+            val contentResolver = getApplication<Application>().contentResolver
+            val cursor = contentResolver.query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                arrayOf(
+                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                    ContactsContract.CommonDataKinds.Phone.NUMBER
+                ),
+                null, null, null
+            )
 
-    // Search contacts by name or phone number
-    fun searchContacts(query: String): Flow<List<Contact>> {
-        return contactDao.searchContacts("%$query%")
-    }
+            cursor?.use {
+                val idIndex = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID)
+                val nameIndex = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+                val numberIndex = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
 
-    // Update an existing contact
-    fun updateContact(contact: Contact) {
-        viewModelScope.launch {
-            contactDao.updateContact(contact)
-        }
-    }
-
-    // Factory for creating the ViewModel with dependencies
-    class Factory(private val contactDao: ContactDao) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(ContactsViewModel::class.java)) {
-                return ContactsViewModel(contactDao) as T
+                while (it.moveToNext()) {
+                    val id = it.getLong(idIndex)
+                    val name = it.getString(nameIndex)
+                    val number = it.getString(numberIndex)
+                    contactsList.add(Contact(id, name, number))
+                }
             }
-            throw IllegalArgumentException("Unknown ViewModel class")
+            repository.insertContacts(contactsList)
+
+            appPreferences.setFirstTime(false)
+            _isFirstTime.value = false
         }
     }
 }

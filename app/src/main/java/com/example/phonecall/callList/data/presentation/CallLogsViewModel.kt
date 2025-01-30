@@ -1,83 +1,61 @@
 package com.example.phonecall.callList.data.presentation
 
-import android.content.Context
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import android.app.Application
 import android.provider.CallLog
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.phonecall.callList.data.CallLogEntry
-import com.example.phonecall.callList.data.CallManager
-import com.example.phonecall.callList.data.CallType
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-class CallLogsViewModel(
-    private val context: Context,
-    private val callManager: CallManager
-) : ViewModel() {
+class CallLogViewModel(application: Application) : AndroidViewModel(application) {
+
     private val _callLogs = MutableStateFlow<List<CallLogEntry>>(emptyList())
-    val callLogs: StateFlow<List<CallLogEntry>> = _callLogs.asStateFlow()
+    val callLogs = _callLogs.asStateFlow()
 
-    init {
-        loadCallLogs()
-    }
-
-    private fun loadCallLogs() {
+    fun fetchCallLogs() {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val cursor = context.contentResolver.query(
-                    CallLog.Calls.CONTENT_URI,
-                    null,
-                    null,
-                    null,
-                    "${CallLog.Calls.DATE} DESC"
-                )
+            val context = getApplication<Application>().applicationContext
+            val callLogsList = mutableListOf<CallLogEntry>()
 
-                cursor?.use { c ->
-                    val logs = mutableListOf<CallLogEntry>()
-                    val numberIndex = c.getColumnIndex(CallLog.Calls.NUMBER)
-                    val typeIndex = c.getColumnIndex(CallLog.Calls.TYPE)
-                    val dateIndex = c.getColumnIndex(CallLog.Calls.DATE)
-                    val nameIndex = c.getColumnIndex(CallLog.Calls.CACHED_NAME)
+            val cursor = context.contentResolver.query(
+                CallLog.Calls.CONTENT_URI,
+                arrayOf(
+                    CallLog.Calls.NUMBER,
+                    CallLog.Calls.TYPE,
+                    CallLog.Calls.DATE,
+                    CallLog.Calls.DURATION
+                ),
+                null, null, CallLog.Calls.DATE + " DESC"
+            )
 
-                    while (c.moveToNext()) {
-                        logs.add(CallLogEntry(
-                            id = c.position.toLong(),
-                            phoneNumber = c.getString(numberIndex),
-                            type = when (c.getInt(typeIndex)) {
-                                CallLog.Calls.INCOMING_TYPE -> CallType.INCOMING
-                                CallLog.Calls.OUTGOING_TYPE -> CallType.OUTGOING
-                                CallLog.Calls.MISSED_TYPE -> CallType.MISSED
-                                else -> CallType.MISSED
-                            },
-                            timestamp = c.getLong(dateIndex),
-                            name = c.getString(nameIndex)
-                        ))
+            cursor?.use {
+                val numberIndex = it.getColumnIndex(CallLog.Calls.NUMBER)
+                val typeIndex = it.getColumnIndex(CallLog.Calls.TYPE)
+                val dateIndex = it.getColumnIndex(CallLog.Calls.DATE)
+                val durationIndex = it.getColumnIndex(CallLog.Calls.DURATION)
+
+                while (it.moveToNext()) {
+                    val number = it.getString(numberIndex)
+                    val type = when (it.getInt(typeIndex)) {
+                        CallLog.Calls.INCOMING_TYPE -> "Incoming"
+                        CallLog.Calls.OUTGOING_TYPE -> "Outgoing"
+                        CallLog.Calls.MISSED_TYPE -> "Missed"
+                        else -> "Unknown"
                     }
-                    _callLogs.value = logs
+                    val date = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
+                        .format(Date(it.getLong(dateIndex)))
+                    val duration = "${it.getInt(durationIndex)} sec"
+
+                    callLogsList.add(CallLogEntry(number, type, date, duration))
                 }
             }
-        }
-    }
 
-    fun initiateCall(phoneNumber: String) {
-        callManager.initiateCall(phoneNumber)
-    }
-
-    class Factory(
-        private val context: Context,
-        private val callManager: CallManager
-    ) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(CallLogsViewModel::class.java)) {
-                return CallLogsViewModel(context, callManager) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class")
+            _callLogs.value = callLogsList
         }
     }
 }
