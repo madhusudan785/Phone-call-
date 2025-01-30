@@ -6,10 +6,13 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 private val Context.dataStore by preferencesDataStore(name = "app_prefs")
 
-class AppPreferences(private val context: Context) {
+
+
+class AppPreferences @Inject constructor(private val context: Context)  {
     private val FIRST_TIME_KEY = booleanPreferencesKey("first_time")
 
     suspend fun isFirstTime(): Boolean {

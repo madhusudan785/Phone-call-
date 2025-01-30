@@ -10,14 +10,19 @@ import androidx.lifecycle.AndroidViewModel
 import com.example.phonecall.callList.data.AppPreferences
 import com.example.phonecall.callList.data.ContactDatabase
 import com.example.phonecall.callList.data.repository.ContactRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
-class ContactViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class ContactViewModel @Inject constructor( private val repository: ContactRepository,
+                                            private val appPreferences: AppPreferences,
+                                            application: Application) : AndroidViewModel(application)
+{
 
     private val db = ContactDatabase.getDatabase(application)
-    private val repository = ContactRepository(db.contactDao())
-    private val appPreferences = AppPreferences(application)
+
 
     private val _contacts = MutableStateFlow<List<Contact>>(emptyList())
     val contacts = _contacts.asStateFlow()
@@ -70,4 +75,16 @@ class ContactViewModel(application: Application) : AndroidViewModel(application)
             _isFirstTime.value = false
         }
     }
+
+    fun addContact(name: String, phone: String) {
+        viewModelScope.launch {
+            val contact = Contact(
+                id = 0, // Let Room auto-generate the ID
+                name = name,
+                phoneNumber = phone
+            )
+            repository.insertContacts(listOf(contact))
+        }
+    }
+
 }

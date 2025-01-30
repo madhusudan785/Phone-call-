@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ContactDao {
 
-        @Insert(onConflict = OnConflictStrategy.REPLACE)
-        suspend fun insertAll(contacts: List<Contact>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(contacts: List<Contact>)
 
 
     @Query("SELECT * FROM contacts ORDER BY name ASC")
@@ -29,5 +29,9 @@ interface ContactDao {
 
     @Update
     suspend fun updateContact(contact: Contact)
+
+    @Query("SELECT name FROM contacts WHERE phoneNumber = :phoneNumber LIMIT 1")
+    suspend fun getContactName(phoneNumber: String): String?
+
 
 }

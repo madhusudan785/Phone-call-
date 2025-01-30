@@ -1,25 +1,38 @@
 package com.example.phonecall.callList.data.presentation
 
+import android.Manifest
 import android.app.Application
+import android.content.pm.PackageManager
 import android.provider.CallLog
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.phonecall.callList.data.CallLogEntry
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
-class CallLogViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class CallLogViewModel@Inject constructor(application: Application) : AndroidViewModel(application) {
 
     private val _callLogs = MutableStateFlow<List<CallLogEntry>>(emptyList())
     val callLogs = _callLogs.asStateFlow()
 
+    init {
+        fetchCallLogs() // Preload data
+    }
     fun fetchCallLogs() {
         viewModelScope.launch {
             val context = getApplication<Application>().applicationContext
+            if (context.checkSelfPermission(Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
+
+                return@launch
+            }
+
             val callLogsList = mutableListOf<CallLogEntry>()
 
             val cursor = context.contentResolver.query(

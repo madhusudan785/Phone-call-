@@ -10,5 +10,5 @@ data class CallLogEntry(
     val callType: String,
     val callDate: String,
     val callDuration: String,
-//    val contactName: String? = null,
+    val contactName: String? = null
 )

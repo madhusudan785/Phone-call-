@@ -21,7 +21,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AddContactDialog(onDismiss: () -> Unit, onConfirm: Any) {
+fun AddContactDialog(onDismiss: () -> Unit, onConfirm: (name: String, phone: String) -> Unit) {
 
     var name by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }

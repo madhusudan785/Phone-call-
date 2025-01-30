@@ -4,7 +4,9 @@ package com.example.phonecall.callList.data.presentation.screens
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -64,18 +66,25 @@ import com.example.phonecall.callList.data.presentation.CallLogViewModel
 fun CallLogScreen(viewModel: CallLogViewModel) {
     val callLogs by viewModel.callLogs.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val requestPermissionLauncher = rememberLauncherForActivityResult(
+
+    val permissionState = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
             viewModel.fetchCallLogs()
+        } else {
+            Toast.makeText(context, "Call Log permission denied.", Toast.LENGTH_SHORT).show()
         }
     }
 
-    // Request the permission to read the call logs when the screen is launched
     LaunchedEffect(Unit) {
-        requestPermissionLauncher.launch(Manifest.permission.READ_CALL_LOG)
+        if (context.checkSelfPermission(Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
+            permissionState.launch(Manifest.permission.READ_CALL_LOG)
+        } else {
+            viewModel.fetchCallLogs()
+        }
     }
+
 
     var isDialPadVisible by remember { mutableStateOf(false) }
     var phoneNumber by remember { mutableStateOf("") }
@@ -209,21 +218,24 @@ fun CallLogItem(callLog: CallLogEntry) {
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = " ${callLog.phoneNumber}", style = MaterialTheme.typography.titleMedium)
-            Icon(painter = if (callLog.callType=="Incoming") {
-                                painterResource(R.drawable.phone_incoming)}
-                            else if (callLog.callType=="Outgoing") {
-                                painterResource(R.drawable.phone_outgoing)
-            }
-                    else{
-                        painterResource(R.drawable.phone_missed)
-
-            }, contentDescription = null)
+            Text(
+                text = callLog.contactName ?: callLog.phoneNumber,
+                style = MaterialTheme.typography.titleMedium
+            )
+            Icon(
+                painter = when (callLog.callType) {
+                    "Incoming" -> painterResource(R.drawable.phone_incoming)
+                    "Outgoing" -> painterResource(R.drawable.phone_outgoing)
+                    else -> painterResource(R.drawable.phone_missed)
+                },
+                contentDescription = null
+            )
             Text(text = "Date: ${callLog.callDate}", style = MaterialTheme.typography.bodyMedium)
             Text(text = "Duration: ${callLog.callDuration}", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
+
 
 @Composable
 fun DialpadButton(

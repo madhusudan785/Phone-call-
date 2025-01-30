@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.SupervisorAccount
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -36,7 +37,7 @@ fun PhoneAppNavigation(
                 NavigationBarItem(
                     selected = currentRoute == Screen.Contacts.route,
                     onClick = { navController.navigate(Screen.Contacts.route) },
-                    icon = { Icon(Icons.Default.Person, contentDescription = "Contacts") },
+                    icon = { Icon(Icons.Default.SupervisorAccount, contentDescription = "Contacts") },
                     label = { Text("Contacts") }
                 )
 
@@ -55,11 +56,11 @@ fun PhoneAppNavigation(
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(Screen.Contacts.route) {
-                val viewModel: ContactViewModel = viewModel()
+                val viewModel: ContactViewModel = hiltViewModel()
                 ContactScreen(viewModel)
             }
             composable(Screen.CallLogs.route) {
-                val viewModel: CallLogViewModel = viewModel()
+                val viewModel: CallLogViewModel = hiltViewModel()
                 CallLogScreen(viewModel)
             }
         }
