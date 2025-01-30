@@ -26,6 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.phonecall.callList.data.AppDatabase
 import com.example.phonecall.callList.data.Contact
 import com.example.phonecall.callList.data.presentation.ContactsViewModel
+import com.example.phonecall.callList.data.presentation.components.AddContactDialog
 
 @Composable
 fun ContactsScreen(
@@ -58,15 +59,16 @@ fun ContactsScreen(
         }
     }
 
-    if (showAddContact) {
-        AddContactDialog(
-            onDismiss = { showAddContact = false },
-            onConfirm = { name, phone ->
-                viewModel.addContact(Contact(name = name, phoneNumber = phone))
-                showAddContact = false
-            }
-        )
-    }
+//    if (showAddContact) {
+//        AddContactDialog(
+//            onDismiss = { showAddContact = false },
+//            onConfirm = {
+//
+////                viewModel.addContact(Contact(name = name, phoneNumber = phone))
+////                showAddContact = false
+//            }
+//        )
+//    }
 }
 
 
