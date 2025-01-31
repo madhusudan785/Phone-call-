@@ -1,4 +1,4 @@
-package com.example.phonecall.callList.data.presentation
+package com.example.phonecall.presentation
 
 sealed class Screen(val route: String) {
     object Contacts : Screen("contacts")

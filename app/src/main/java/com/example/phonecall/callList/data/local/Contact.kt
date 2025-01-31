@@ -1,4 +1,4 @@
-package com.example.phonecall.callList.data
+package com.example.phonecall.callList.data.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

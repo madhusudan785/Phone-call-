@@ -2,9 +2,9 @@ package com.example.phonecall.di
 
 
 import android.content.Context
-import com.example.phonecall.callList.data.AppPreferences
-import com.example.phonecall.callList.data.ContactDatabase
-import com.example.phonecall.callList.data.repository.ContactRepository
+import com.example.phonecall.callList.data.local.AppPreferences
+import com.example.phonecall.callList.data.local.ContactDatabase
+import com.example.phonecall.callList.repository.ContactRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

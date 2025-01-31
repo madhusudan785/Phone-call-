@@ -1,7 +1,7 @@
-package com.example.phonecall.callList.data.repository
+package com.example.phonecall.callList.repository
 
-import com.example.phonecall.callList.data.Contact
-import com.example.phonecall.callList.data.ContactDao
+import com.example.phonecall.callList.data.local.Contact
+import com.example.phonecall.callList.data.local.ContactDao
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

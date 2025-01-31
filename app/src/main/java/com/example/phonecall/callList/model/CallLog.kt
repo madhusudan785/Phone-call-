@@ -1,7 +1,4 @@
-package com.example.phonecall.callList.data
-
-import java.text.DateFormat
-import java.util.Date
+package com.example.phonecall.callList.model
 
 
 data class CallLogEntry(

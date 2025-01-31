@@ -1,4 +1,4 @@
-package com.example.phonecall.callList.data.presentation
+package com.example.phonecall.viewModels
 
 import android.Manifest
 import android.app.Application
@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import android.provider.CallLog
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.phonecall.callList.data.CallLogEntry
+import com.example.phonecall.callList.model.CallLogEntry
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -62,9 +62,16 @@ class CallLogViewModel@Inject constructor(application: Application) : AndroidVie
                     }
                     val date = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
                         .format(Date(it.getLong(dateIndex)))
-                    val duration = "${it.getInt(durationIndex)} sec"
+                    val totalSeconds = it.getInt(durationIndex)
+                    val minutes = totalSeconds / 60
+                    val seconds = totalSeconds % 60
+                    val formattedDuration = if (minutes > 0) {
+                        "${minutes}m ${seconds}s"
+                    } else {
+                        "${seconds}s"
+                    }
 
-                    callLogsList.add(CallLogEntry(number, type, date, duration))
+                    callLogsList.add(CallLogEntry(number, type, date, formattedDuration))
                 }
             }
 

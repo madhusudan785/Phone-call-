@@ -1,4 +1,4 @@
-package com.example.phonecall.callList.data.presentation.components
+package com.example.phonecall.presentation.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

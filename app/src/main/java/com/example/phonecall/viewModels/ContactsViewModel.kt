@@ -1,28 +1,25 @@
-package com.example.phonecall.callList.data.presentation
+package com.example.phonecall.viewModels
 
 import androidx.lifecycle.viewModelScope
-import com.example.phonecall.callList.data.Contact
+import com.example.phonecall.callList.data.local.Contact
 import kotlinx.coroutines.launch
 
 import android.app.Application
 import android.provider.ContactsContract
 import androidx.lifecycle.AndroidViewModel
-import com.example.phonecall.callList.data.AppPreferences
-import com.example.phonecall.callList.data.ContactDatabase
-import com.example.phonecall.callList.data.repository.ContactRepository
+import com.example.phonecall.callList.data.local.AppPreferences
+import com.example.phonecall.callList.data.local.ContactDatabase
+import com.example.phonecall.callList.repository.ContactRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
-
 @HiltViewModel
-class ContactViewModel @Inject constructor( private val repository: ContactRepository,
-                                            private val appPreferences: AppPreferences,
-                                            application: Application) : AndroidViewModel(application)
-{
-
-    private val db = ContactDatabase.getDatabase(application)
-
+class ContactViewModel @Inject constructor(
+    private val repository: ContactRepository,
+    private val appPreferences: AppPreferences,
+    application: Application
+) : AndroidViewModel(application) {
 
     private val _contacts = MutableStateFlow<List<Contact>>(emptyList())
     val contacts = _contacts.asStateFlow()
@@ -39,7 +36,8 @@ class ContactViewModel @Inject constructor( private val repository: ContactRepos
 
     private fun checkFirstTime() {
         viewModelScope.launch {
-            _isFirstTime.value = appPreferences.isFirstTime()
+            val firstTime = appPreferences.isFirstTime()
+            _isFirstTime.value = firstTime
         }
     }
 
@@ -71,6 +69,7 @@ class ContactViewModel @Inject constructor( private val repository: ContactRepos
             }
             repository.insertContacts(contactsList)
 
+
             appPreferences.setFirstTime(false)
             _isFirstTime.value = false
         }
@@ -79,12 +78,11 @@ class ContactViewModel @Inject constructor( private val repository: ContactRepos
     fun addContact(name: String, phone: String) {
         viewModelScope.launch {
             val contact = Contact(
-                id = 0, // Let Room auto-generate the ID
+                id = 0,
                 name = name,
                 phoneNumber = phone
             )
             repository.insertContacts(listOf(contact))
         }
     }
-
 }

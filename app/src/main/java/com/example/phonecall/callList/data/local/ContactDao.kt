@@ -1,4 +1,4 @@
-package com.example.phonecall.callList.data
+package com.example.phonecall.callList.data.local
 
 import androidx.room.Dao
 import androidx.room.Delete

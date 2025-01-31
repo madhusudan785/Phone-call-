@@ -1,10 +1,8 @@
-package com.example.phonecall.callList.data.presentation
+package com.example.phonecall.presentation.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.SupervisorAccount
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -15,14 +13,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.phonecall.callList.data.presentation.screens.CallLogScreen
-import com.example.phonecall.callList.data.presentation.screens.ContactScreen
+import com.example.phonecall.presentation.Screen
+import com.example.phonecall.presentation.screens.CallLogScreen
+import com.example.phonecall.presentation.screens.ContactScreen
+import com.example.phonecall.viewModels.CallLogViewModel
+import com.example.phonecall.viewModels.ContactViewModel
 
 @Composable
 fun PhoneAppNavigation(
