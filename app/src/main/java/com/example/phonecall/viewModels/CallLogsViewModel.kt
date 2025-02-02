@@ -48,7 +48,7 @@ class CallLogViewModel @Inject constructor(
                     CallLog.Calls.DURATION,
                     CallLog.Calls.TYPE
                 ),
-                null, null, "${CallLog.Calls.DATE} DESC" // ❌ Removed LIMIT (Not supported)
+                null, null, "${CallLog.Calls.DATE} DESC"
             )
 
             cursor?.use {
@@ -61,7 +61,15 @@ class CallLogViewModel @Inject constructor(
                 while (it.moveToNext() && count < 50) {
                     val phoneNumber = it.getString(numberIndex)
                     val callDate = DateFormat.getDateTimeInstance().format(Date(it.getLong(dateIndex)))
-                    val callDuration = "${it.getInt(durationIndex)}s"
+
+                    val totalSeconds = it.getInt(durationIndex)
+                    val minutes = totalSeconds / 60
+                    val seconds = totalSeconds % 60
+                    val formattedDuration = if (minutes > 0) {
+                        "${minutes}m ${seconds}s"
+                    } else {
+                        "${seconds}s"
+                    }
                     val callType = when (it.getInt(typeIndex)) {
                         CallLog.Calls.INCOMING_TYPE -> "Incoming"
                         CallLog.Calls.OUTGOING_TYPE -> "Outgoing"
@@ -78,7 +86,7 @@ class CallLogViewModel @Inject constructor(
                             phoneNumber = phoneNumber,
                             callType = callType,
                             callDate = callDate,
-                            callDuration = callDuration,
+                            callDuration = formattedDuration,
                             contactName = contactName
                         )
                     )

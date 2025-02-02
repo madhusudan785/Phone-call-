@@ -4,18 +4,12 @@ package com.example.phonecall.presentation.screens
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-
-
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,7 +31,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -125,15 +118,28 @@ fun CallLogItem(callLog: CallLogEntry) {
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = callLog.contactName ?: callLog.phoneNumber,
-                style = MaterialTheme.typography.titleMedium
-            )
+           Row (modifier = Modifier.fillMaxWidth(),
+               horizontalArrangement = Arrangement.SpaceBetween,
+               verticalAlignment = Alignment.CenterVertically){
+               Text(
+                   text = callLog.contactName ?: callLog.phoneNumber,
+                   style = MaterialTheme.typography.titleMedium
+               )
+               Icon(
+                   painter = when (callLog.callType) {
+                       "Incoming" -> painterResource(R.drawable.phone_incoming)
+                       "Outgoing" -> painterResource(R.drawable.phone_outgoing)
+                       else -> painterResource(R.drawable.phone_missed)
+                   },
+                   contentDescription = null
+               )
+           }
             Text(text = "Date: ${callLog.callDate}", style = MaterialTheme.typography.bodyMedium)
             Text(text = "Duration: ${callLog.callDuration}", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
+
 
 
 
