@@ -11,4 +11,9 @@ class ContactRepository @Inject constructor(private val contactDao: ContactDao) 
     suspend fun insertContacts(contacts: List<Contact>) {
         contactDao.insertAll(contacts)
     }
+
+    suspend fun getContactName(phoneNumber: String?): String? {
+        val contactName = contactDao.getContactName(phoneNumber ?: "")
+        return contactName
+    }
 }

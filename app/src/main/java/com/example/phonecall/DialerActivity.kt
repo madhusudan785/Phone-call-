@@ -3,9 +3,7 @@ package com.example.phonecall
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.phonecall.presentation.screens.DialerScreen
 import com.example.phonecall.viewModels.DialerViewModel

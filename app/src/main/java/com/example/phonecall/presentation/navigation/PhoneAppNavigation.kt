@@ -28,6 +28,8 @@ import com.example.phonecall.viewModels.ContactViewModel
 fun PhoneAppNavigation(
     navController: NavHostController = rememberNavController()
 ) {
+    val callLogViewModel: CallLogViewModel = hiltViewModel()
+    val contactViewModel: ContactViewModel = hiltViewModel()
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -52,16 +54,15 @@ fun PhoneAppNavigation(
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Contacts.route,
+            startDestination = Screen.CallLogs.route,
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(Screen.Contacts.route) {
-                val viewModel: ContactViewModel = hiltViewModel()
-                ContactScreen(viewModel)
+                ContactScreen(contactViewModel)
             }
             composable(Screen.CallLogs.route) {
-                val viewModel: CallLogViewModel = hiltViewModel()
-                CallLogScreen(viewModel)
+                CallLogScreen(callLogViewModel)
+
             }
         }
     }
